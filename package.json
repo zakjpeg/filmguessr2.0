@@ -13,6 +13,7 @@
     "@supabase/supabase-js": "^2.117.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.23",
+    "email-validator": "^2.0.4",
     "next": "16.3.5",
     "react": "19.2.8",
     "react-dom": "19.2.8",

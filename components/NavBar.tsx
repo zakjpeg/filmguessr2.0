@@ -2,8 +2,43 @@
 import Link from "next/link";
 import { MdLocalMovies } from "react-icons/md";
 import { FilmguessrLogo } from "./logo/FilmguessrLogo";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect, useState } from "react";
+import { User } from "@supabase/supabase-js";
+import { BiCircleThreeQuarter } from "react-icons/bi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { PiSpinnerGapLight } from "react-icons/pi";
+import { GiFilmProjector } from "react-icons/gi";
+import { TiUserAdd } from "react-icons/ti";
+import Avatar from "./user/Avatar";
 
 export function NavBar() {
+
+    const supabase = createClient();
+
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const getUser = async () => {
+            const {
+                data: { user },
+            } = await supabase.auth.getUser();
+
+            setUser(user);
+            setLoading(false);
+        };
+
+        getUser();
+
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, [supabase]);
 
     return (
         <div className="select-none px-16 h-16 w-full flex flex-row justify-between items-center">
@@ -23,12 +58,28 @@ export function NavBar() {
                 >
                     Leaderboards
                 </Link>
-                <Link
-                href="/profile"
-                className="hover:text-accent cursor-pointer"
-                >
-                    <div className="w-8 h-8 bg-red-500 rounded-full"></div>
-                </Link>
+                {loading
+                ? <div className="flex justify-center items-center w-8 h-8 bg-background rounded-full">
+                        <PiSpinnerGapLight className="animate-spin"/>
+                    </div>
+                : user
+                    ? <Link
+                        href="/profile"
+                        className="hover:text-accent cursor-pointer"
+                        >
+                            <Avatar size={8} outline={true}/>
+                        </Link>
+                    :   <Link
+                        href="/join"
+                        className="hover:text-accent cursor-pointer"
+                        >
+                            <div 
+                            title="Join"
+                            className="flex justify-center items-center w-8 h-8 bg-background rounded-full outline-2 outline-accent outline-offset-2">
+                                <TiUserAdd size={24} className="text-primary/75"/>
+                            </div>
+                        </Link>
+                }
                 
             </div>
             
