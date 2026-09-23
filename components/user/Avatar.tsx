@@ -1,5 +1,6 @@
 "use client";
 
+import { AVATAR_ICONS } from "@/lib/avatar/client/avatar.types";
 import clsx from "clsx";
 import { TiUser } from "react-icons/ti";
 
@@ -32,7 +33,7 @@ export default function Avatar(
         )}
         >
             {profile?.icon
-            ? profile.icon
+            ? AVATAR_ICONS.find((icon) => (icon.name === profile.icon))?.icon
             : <TiUser/>
             }
             

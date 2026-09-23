@@ -19,6 +19,7 @@ import { Icon } from "next/dist/lib/metadata/types/metadata-types";
 import { FaCrop, FaX } from "react-icons/fa6";
 import { AVATAR_COLORS_PRIMARY, AVATAR_COLORS_SECONDARY, AVATAR_ICONS } from "@/lib/avatar/client/avatar.types";
 import { IconType } from "react-icons";
+import ErrorMessage from "@/components/error/ErrorMessage";
 
 export default function Profile() {
     const supabase = createClient();
@@ -27,22 +28,45 @@ export default function Profile() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [page, setPage] = useState<"home" | "name" | "avatar">("home")
+    const [error, setError] = useState<string | null>();
 
     const [inputName, setInputName] = useState<string>("");
     const [inputColor1, setInputColor1] = useState<string>("#ff00ff");
     const [inputColor2, setInputColor2] = useState<string>("#00ffff");
-    const [inputIcon, setInputIcon] = useState<IconType>(FaCrop);
+    const [inputIcon, setInputIcon] = useState<string>("");
 
-    // check if user is logged in
+
     useEffect(() => {
         const helper = async () => {
+            setLoading(true);
+            setError(null);
+            // check if user is logged in
             const {data: { user: userData }} = await supabase.auth.getUser();
 
-            if (!userData) {
+            if (!userData?.id) {
                 router.replace('/');
+                return;
             } else {
                 setUser(userData);
             }
+
+            const {data: profile, error: profileError} = await supabase
+            .from('profile')
+            .select('*')
+            .eq('user_id', userData.id)
+            .single();
+
+            if (!profile || profileError) {
+                setError("We couldn't load your profile. Please try again later");
+                return;
+            }
+
+            setInputName(profile.name);
+            setInputColor1(profile.color_primary);
+            setInputColor2(profile.color_secondary);
+            setInputIcon(profile.icon);
+
+
 
             setLoading(false);
         }
@@ -72,7 +96,7 @@ export default function Profile() {
 
     return (
         <div className={clsx(
-            "bg-linear-0 from-accent/18 to-transparent gap-6 flex-1 flex flex-col justify-start items-center p-16",
+            "bg-linear-0 from-accent/18 to-transparent gap-6 flex-1 flex flex-col justify-start items-center p-16 pt-0",
             "max-md:p-2"
         )}>
             <BlurredImageBackground src="https://picsum.photos/500/500"/>
@@ -81,6 +105,10 @@ export default function Profile() {
                 "min-w-100 max-w-130 flex flex-col gap-6 bg-background p-8 rounded-2xl shadow-xl flex-1 h-full sticky top-10 overflow-hidden",
                 "max-md:static max-md:w-full"
             )}>
+                {/* Error */}
+                {error &&
+                <ErrorMessage text={error}/>
+                }
                 {/* User data */}
                 <div className="flex flex-col gap-4 items-center">
                     <Avatar
@@ -95,7 +123,7 @@ export default function Profile() {
                     }
                     />
                     <p className="font-bold text-2xl line-clamp-1 text-ellipsis shrink">
-                        @zak.elas
+                        {inputName}
                     </p>
                 </div>
 
@@ -155,7 +183,8 @@ export default function Profile() {
 
                 {// Edit avatar
                 page === "avatar" && 
-                <div className="h-full flex flex-col gap-1">
+                <div className="h-full flex flex-col gap-4">
+                    <div>
                     <p className="text-2xl font-bold">Icon</p>
                     <div className="flex flex-row gap-2 flex-wrap">
                     {AVATAR_ICONS.map((icon, idx) => (
@@ -163,14 +192,16 @@ export default function Profile() {
                         key={icon.name}
                         className="w-8 h-8 bg-primary/5 flex justify-center items-center rounded-full cursor-pointer"
                         onClick={() => {
-                            setInputIcon(icon.icon)
+                            setInputIcon(icon.name)
                         }}
                         >
-                            {icon.icon({})}
+                            {AVATAR_ICONS.find((key) => (key.name === icon.name))?.icon}
                         </div>
                     ))}
                     </div>
-                    <p className="text-2xl font-bold">Color #1</p>
+                    </div>
+                    <div>
+                    <p className="text-xl font-bold mb-1">Color #1</p>
                     <div className="flex flex-row gap-2">
                     {AVATAR_COLORS_PRIMARY.map((key, idx) => (
                         <div
@@ -188,7 +219,9 @@ export default function Profile() {
                         />
                     ))}
                     </div>
-                    <p className="text-2xl font-bold">Color #2</p>
+                    </div>
+                    <div>
+                    <p className="text-xl font-bold mb-1">Color #2</p>
                     <div className="flex flex-row gap-2">
                     {AVATAR_COLORS_SECONDARY.map((key, idx) => (
                         <div
@@ -205,6 +238,7 @@ export default function Profile() {
                         }}
                         />
                     ))}
+                    </div>
                     </div>
                     <button
                         className="mt-6 flex flex-row gap-1 justify-center items-center bg-primary/5 hover:bg-primary/10 transition-colors py-2 rounded-md cursor-pointer"
