@@ -5,7 +5,7 @@ import { DiVim } from "react-icons/di"
 import { Button } from "@/components/buttons/Button";
 import Image from "next/image";
 import BlurredImageBackground from "@/components/image/BlurredImageBackground";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as EmailValidator from "email-validator"
 import { MdMovie, MdOutlineError } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
@@ -15,12 +15,15 @@ import clsx from "clsx";
 import { User } from "@supabase/supabase-js";
 import Avatar from "@/components/user/Avatar";
 import { useProfileStore } from "@/stores/useProfileStore";
+import getLevel from "@/lib/user/client/getLevel";
 
 export default function Profile() {
     const supabase = createClient();
     const router = useRouter();
 
     const {user, profile, loading: profileLoading} = useProfileStore();
+
+    const experience = useMemo(() => getLevel(profile?.experience?.points), [profile?.experience?.points])
 
     async function handleSignOut() {
         await signOut();
@@ -29,6 +32,17 @@ export default function Profile() {
     function handleEditProfile() {
         router.push("/profile/edit");
     }
+
+    useEffect(() => {
+        if (profileLoading) {
+            return;
+        }
+
+        if (!user) {
+            router.replace("/join");
+        }
+    }, [profileLoading])
+
 
     return (
         <div className={clsx(
@@ -50,11 +64,32 @@ export default function Profile() {
                             @{profile?.name}
                         </p>
                         }
-                        <p className="flex flex-row gap-1 items-center font-bold text-center w-fit px-2 rounded-sm uppercase text-background bg-accent">
-                            <MdMovie className="text-background"/> -
+                        {experience &&
+                        <p
+                        title={"Level " + experience.level}
+                        className="flex flex-row gap-1 items-center font-bold text-center w-fit px-2 rounded-sm uppercase text-background bg-accent">
+                            <MdMovie className="text-background"/> {experience.level}
                         </p>
+                        }
                     </div>
                 </div>
+
+                {/* 3/6 = (0.5) * 100  */}
+
+                {/* Experience Points */}
+                <div
+                    title={`Experience: ${experience?.xp} / ${75}`}
+                >
+                    {experience?.xp} <span className="text-primary/50 text-xs">/ {75}</span>
+                    <div className="relative overflow-hidden w-full h-1 bg-primary/50 rounded-full">
+                        <div 
+                        style={{
+                            width: experience ? `${(experience?.xp / 75) * 100}%` : undefined
+                        }}
+                        className="bg-accent absolute left-0 top-0 h-full rounded-full" />
+                    </div>
+                </div>
+
 
                 {/* Analytics */}
                 <table className="table-auto">

@@ -11,6 +11,7 @@ import { MdOutlineError } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import ErrorMessage from "@/components/error/ErrorMessage";
+import { BiLogoGmail } from "react-icons/bi";
 
 export default function Join() {
     const supabase = createClient();
@@ -64,7 +65,7 @@ export default function Join() {
                 {stage == 1 && <>
                 <div>
                     <p className="font-bold text-4xl uppercase"><span className="text-accent">JOIN</span> FILMGUESSR</p>
-                    <p className="text-primary/75">Play unlimited games, level up, join the leaderboards</p>
+                    <p className="text-primary/75">Play unlimited games, level up, climb the leaderboards</p>
                 </div>
                 { /* Error State*/
                     error &&
@@ -93,10 +94,38 @@ export default function Join() {
                 />
                 </>}
                 {stage == 2 && <>
-                <div>
-                    <p className="font-bold text-4xl uppercase"><span className="text-accent">CHECK</span> YOUR INBOX</p>
-                    <p className="text-primary/75">Enter the verification code we just sent, or click the link in the email.</p>
-                    {/* ZAK TODO: Add verification using 6 digit OTP code */}
+                <div className="flex flex-col gap-6">
+                    <div>
+                        <p className="font-bold text-4xl uppercase"><span className="text-accent">CHECK</span> YOUR INBOX</p>
+                        <p className="text-primary/75 text-xl">Sign in using the link in the email.</p>
+                    </div>
+                    <hr className="text-primary/15"/>
+                    <div className="flex flex-row justify-center items-center gap-4 ">
+                        <a className="flex justify-center items-center h-14 w-14 cursor-pointer hover:bg-primary/5 p-2 rounded-md"
+                        href="https://gmail.com"
+                        >
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Gmail_icon_%282026%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"
+                            alt="Gmail"
+                            />
+                        </a>
+                        <a className="flex justify-center items-center h-14 w-14 cursor-pointer hover:bg-primary/5 p-2 rounded-md"
+                        href="https://outlooki.com"
+                        >
+                            <img
+                            src="https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Microsoft_Outlook_Icon_%282025%E2%80%93present%29.svg/1280px-Microsoft_Outlook_Icon_%282025%E2%80%93present%29.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20251003204701"
+                            alt="Outlook"
+                            />
+                        </a>
+                        <a className="flex justify-center items-center h-14 w-14 cursor-pointer hover:bg-primary/5 p-2 rounded-md"
+                        href="https://icloud.com"
+                        >
+                            <img
+                            src="https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/ICloud_logo.svg/250px-ICloud_logo.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20200306180013"
+                            alt="iCloud"
+                            />
+                        </a>
+
+                    </div>
                 </div>
                 </>}
 

@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { Ref } from "react";
 
 export function Button(
     {
@@ -7,17 +8,20 @@ export function Button(
         hover="white",
         onClick,
         disabled,
+        ref,
     }:{
         text: string, 
         color?: "white" | "green" | "red", 
         hover?: "white" | "green" | "red",
         onClick?: () => void,
         disabled?: boolean,
+        ref?: Ref<HTMLButtonElement>
     }
 ) {
 
     return (
         <button
+        ref={ref}
         disabled={disabled} 
         onClick={onClick}
         className={clsx(

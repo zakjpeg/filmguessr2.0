@@ -23,7 +23,12 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         const supabase = createClient();
         const { data, error } = await supabase
             .from("profile")
-            .select("*")
+            .select(`
+                *,
+                experience (
+                    *
+                )
+            `)
             .eq("user_id", userId)
             .maybeSingle();
 
