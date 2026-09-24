@@ -4,7 +4,8 @@
   --background: #181918;
   --primary: #ffffff;
   --secondary: #000000;
-  --accent: rgb(208, 255, 0);;
+  --accent: rgb(208, 255, 0);
+  --mega: rgb(213, 87, 255);
   --font-sans: --font-barlow
 }
 
@@ -13,6 +14,7 @@
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
+  --color-mega: var(--mega);
   --font-sans: var(--font-barlow);
 }
 

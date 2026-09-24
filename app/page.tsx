@@ -17,14 +17,14 @@ export default function Home() {
         {/* Floating Container */}
         <div className="absolute top-0 right-0 h-full py-32 px-16 pointer-events-none">
           {/* Sticky Component */}
-          <div className="sticky top-10 w-96 pointer-events-auto border border-primary p-2 rounded">
+          <div className="sticky top-20 w-96 pointer-events-auto bg-background shadow-lg p-6 rounded-2xl">
             
             {/* Buttons */}
             <div className="flex flex-row gap-2 items-center">
-              <Link href="/play" className="flex-1">
+              <Link href="/play" className="flex-1 flex">
                 <Button text="Play" color="green" hover="red"/>
               </Link>
-              <Link href="/gamemodes" className="flex-1">
+              <Link href="/gamemodes" className="flex-1 flex">
                 <Button text="Discover" color="white"/>
               </Link>
             </div>
@@ -32,7 +32,12 @@ export default function Home() {
         </div>
 
         {/* Splash Page */}
-        <div className="text-5xl">
+        <div className="text-5xl h-screen">
+          <FilmguessrLogo/>
+          <p className="text-2xl">GUESS THE FILM & YEAR</p>
+        </div>
+
+        <div className="text-5xl h-screen bg-">
           <FilmguessrLogo/>
           <p className="text-2xl">GUESS THE FILM & YEAR</p>
         </div>

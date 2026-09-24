@@ -12,6 +12,7 @@ import { GiFilmProjector } from "react-icons/gi";
 import { TiUserAdd } from "react-icons/ti";
 import Avatar from "./user/Avatar";
 import { useProfileStore } from "@/stores/useProfileStore";
+import clsx from "clsx";
 
 export function NavBar() {
 
@@ -19,7 +20,10 @@ export function NavBar() {
     const {profile, loading} = useProfileStore();
 
     return (
-        <div className="select-none px-16 h-16 w-full flex flex-row justify-between items-center">
+        <div className={clsx(
+            "select-none px-16 h-16 w-full flex flex-row justify-between items-center",
+            "max-md:px-4"
+        )}>
             {/* Left Side */}
             <Link
             href="/"

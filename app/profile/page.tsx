@@ -78,13 +78,13 @@ export default function Profile() {
 
                 {/* Experience Points */}
                 <div
-                    title={`Experience: ${experience?.xp} / ${75}`}
+                    title={`Experience: ${experience?.xp} / ${experience?.xpRequired}`}
                 >
-                    {experience?.xp} <span className="text-primary/50 text-xs">/ {75}</span>
+                    {experience?.xp} <span className="text-primary/50 text-xs">/ {experience?.xpRequired}</span>
                     <div className="relative overflow-hidden w-full h-1 bg-primary/50 rounded-full">
                         <div 
                         style={{
-                            width: experience ? `${(experience?.xp / 75) * 100}%` : undefined
+                            width: experience ? `${(experience?.xp / experience?.xpRequired) * 100}%` : undefined
                         }}
                         className="bg-accent absolute left-0 top-0 h-full rounded-full" />
                     </div>
