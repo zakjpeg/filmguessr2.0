@@ -38,22 +38,20 @@ export default function Join() {
 
         // clear errors
         setError(null);
-
-        // validate email
-        if (!EmailValidator.validate(inputEmail)) {
-            setError("We couldn't validate your email. Please try again, or use a different email.")
-            return;
-        }
         
         // optimistically update UI to next stage
         setStage(2)
-        const { data: { user }, error} = await supabase.auth.signInWithOtp({
+
+        // Sign in with OTP
+        const { error} = await supabase.auth.signInWithOtp({
             email: inputEmail,
-        })
+        });
         
+        // Handle errors
         if (error) {
             setStage(1);
             setError("We couldn't register your account. Please try again, or use a different email.");
+            return;
         }
 
     }

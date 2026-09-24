@@ -14,30 +14,14 @@ import signOut from "@/lib/auth/client/signOut";
 import clsx from "clsx";
 import { User } from "@supabase/supabase-js";
 import Avatar from "@/components/user/Avatar";
+import { useProfileStore } from "@/stores/useProfileStore";
 
 export default function Profile() {
     const supabase = createClient();
     const router = useRouter();
 
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const {user, profile, loading: profileLoading} = useProfileStore();
 
-    // check if user is logged in
-    useEffect(() => {
-        const helper = async () => {
-            const {data: { user: userData }} = await supabase.auth.getUser();
-
-            if (!userData) {
-                router.replace('/');
-            } else {
-                setUser(userData);
-            }
-
-            setLoading(false);
-        }
-        helper();
-    }, [])
-    
     async function handleSignOut() {
         await signOut();
     }
@@ -59,13 +43,15 @@ export default function Profile() {
             )}>
                 {/* User data */}
                 <div className="flex flex-row gap-4 items-center">
-                    <Avatar outline={true}/>
+                    <Avatar outline={true} profile={profile} loading={profileLoading}/>
                     <div className="flex flex-col w-full min-w-0">
+                        {profile?.name &&
                         <p className="font-bold text-2xl line-clamp-1 text-ellipsis shrink">
-                            @zak.elasqwerqwerqwerqwers
+                            @{profile?.name}
                         </p>
+                        }
                         <p className="flex flex-row gap-1 items-center font-bold text-center w-fit px-2 rounded-sm uppercase text-background bg-accent">
-                            <MdMovie className="text-background"/> 29
+                            <MdMovie className="text-background"/> -
                         </p>
                     </div>
                 </div>
@@ -75,11 +61,11 @@ export default function Profile() {
                     <tbody>
                         <tr>
                             <td>Matches Played</td>
-                            <td>103</td>
+                            <td>-</td>
                         </tr>
                         <tr>
                             <td>Accuracy</td>
-                            <td>83%</td>
+                            <td>-</td>
                         </tr>
                     </tbody>
                 </table>

@@ -59,125 +59,35 @@ export const AVATAR_COLORS_SECONDARY = [
     "#F0A9D0", // Light pink
 ];
 
-export const AVATAR_ICONS = [
-    {
-        name: "Crown",
-        icon: <FaCrown />,
-    },
-    {
-        name: "Cat",
-        icon: <FaCat />,
-    },
-    {
-        name: "Dog",
-        icon: <FaDog />,
-    },
-    {
-        name: "Fish",
-        icon: <FaFish />,
-    },
-    {
-        name: "Frog",
-        icon: <FaFrog />,
-    },
-    {
-        name: "Dragon",
-        icon: <FaDragon />,
-    },
-    {
-        name: "Spider",
-        icon: <FaSpider />,
-    },
-    {
-        name: "Ghost",
-        icon: <FaGhost />,
-    },
-    {
-        name: "Skull",
-        icon: <FaSkull />,
-    },
-    {
-        name: "Wizard",
-        icon: <FaHatWizard />,
-    },
-    {
-        name: "Rocket",
-        icon: <FaRocket />,
-    },
-    {
-        name: "Car",
-        icon: <FaCar />,
-    },
-    {
-        name: "Film",
-        icon: <FaFilm />,
-    },
-    {
-        name: "Clapperboard",
-        icon: <FaClapperboard />,
-    },
-    {
-        name: "Camera",
-        icon: <FaCamera />,
-    },
-    {
-        name: "Theater",
-        icon: <FaMasksTheater />,
-    },
-    {
-        name: "Popcorn",
-        icon: <GiPopcorn />,
-    },
-    {
-        name: "Movie Ticket",
-        icon: <FaTicket />,
-    },
-    {
-        name: "Star",
-        icon: <FaStar />,
-    },
-    {
-        name: "Heart",
-        icon: <FaHeart />,
-    },
-    {
-        name: "Fire",
-        icon: <FaFire />,
-    },
-    {
-        name: "Lightning",
-        icon: <FaBolt />,
-    },
-    {
-        name: "Moon",
-        icon: <FaMoon />,
-    },
-    {
-        name: "Sun",
-        icon: <FaSun />,
-    },
-    {
-        name: "Gamepad",
-        icon: <FaGamepad />,
-    },
-    {
-        name: "Pizza",
-        icon: <FaPizzaSlice />,
-    },
-    {
-        name: "Ice Cream",
-        icon: <FaIceCream />,
-    },
-    {
-        name: "Burger",
-        icon: <FaBurger />,
-    },
-    {
-        name: "Toilet Paper",
-        icon: <FaToiletPaper />,
-    },
-    {
-        name: "Poop",
-        icon: <FaPoop />,
-    },
-];
+export const AVATAR_ICONS = {
+    crown: FaCrown,
+    cat: FaCat,
+    dog: FaDog,
+    fish: FaFish,
+    frog: FaFrog,
+    dragon: FaDragon,
+    spider: FaSpider,
+    ghost: FaGhost,
+    skull: FaSkull,
+    wizard: FaHatWizard,
+    rocket: FaRocket,
+    car: FaCar,
+    film: FaFilm,
+    clapperboard: FaClapperboard,
+    camera: FaCamera,
+    theater: FaMasksTheater,
+    popcorn: GiPopcorn,
+    movie_ticket: FaTicket,
+    star: FaStar,
+    heart: FaHeart,
+    fire: FaFire,
+    lightning: FaBolt,
+    moon: FaMoon,
+    sun: FaSun,
+    gamepad: FaGamepad,
+    pizza: FaPizzaSlice,
+    ice_cream: FaIceCream,
+    burger: FaBurger,
+    toilet_paper: FaToiletPaper,
+    poop: FaPoop,
+} as const;

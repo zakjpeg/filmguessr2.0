@@ -2,6 +2,7 @@
 
 import { AVATAR_ICONS } from "@/lib/avatar/client/avatar.types";
 import clsx from "clsx";
+import { PiSpinnerGapLight } from "react-icons/pi";
 import { TiUser } from "react-icons/ti";
 
 export default function Avatar(
@@ -9,14 +10,18 @@ export default function Avatar(
         userId, 
         outline = false, 
         size = 12,
-        profile
+        profile,
+        loading = false,
     }:{
         userId?: string | null | undefined, 
         outline?: boolean,
         size?:number
-        profile?: any
+        profile?: Profile | null,
+        loading?: boolean
     }
 ) {
+
+    const Icon = (AVATAR_ICONS[profile?.icon as keyof typeof AVATAR_ICONS]) ?? TiUser;
 
     return (
         <div
@@ -32,11 +37,10 @@ export default function Avatar(
             outline && "outline-2 outline-accent outline-offset-2"
         )}
         >
-            {profile?.icon
-            ? AVATAR_ICONS.find((icon) => (icon.name === profile.icon))?.icon
-            : <TiUser/>
+            {loading
+            ? <PiSpinnerGapLight className="animate-spin"/>
+            : <Icon />
             }
-            
         </div>
     )
 }

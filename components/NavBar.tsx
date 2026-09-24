@@ -11,34 +11,12 @@ import { PiSpinnerGapLight } from "react-icons/pi";
 import { GiFilmProjector } from "react-icons/gi";
 import { TiUserAdd } from "react-icons/ti";
 import Avatar from "./user/Avatar";
+import { useProfileStore } from "@/stores/useProfileStore";
 
 export function NavBar() {
 
     const supabase = createClient();
-
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        const getUser = async () => {
-            const {
-                data: { user },
-            } = await supabase.auth.getUser();
-
-            setUser(user);
-            setLoading(false);
-        };
-
-        getUser();
-
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-        });
-
-        return () => subscription.unsubscribe();
-    }, [supabase]);
+    const {profile, loading} = useProfileStore();
 
     return (
         <div className="select-none px-16 h-16 w-full flex flex-row justify-between items-center">
@@ -62,12 +40,12 @@ export function NavBar() {
                 ? <div className="flex justify-center items-center w-8 h-8 bg-background rounded-full">
                         <PiSpinnerGapLight className="animate-spin"/>
                     </div>
-                : user
+                : profile
                     ? <Link
                         href="/profile"
                         className="hover:text-accent cursor-pointer"
                         >
-                            <Avatar size={8} outline={true}/>
+                            <Avatar size={8} outline={true} profile={profile ?? undefined}/>
                         </Link>
                     :   <Link
                         href="/join"

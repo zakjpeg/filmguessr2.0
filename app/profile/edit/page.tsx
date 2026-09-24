@@ -20,58 +20,47 @@ import { FaCrop, FaX } from "react-icons/fa6";
 import { AVATAR_COLORS_PRIMARY, AVATAR_COLORS_SECONDARY, AVATAR_ICONS } from "@/lib/avatar/client/avatar.types";
 import { IconType } from "react-icons";
 import ErrorMessage from "@/components/error/ErrorMessage";
+import { CHARLIM_NAME, CHARMIN_NAME } from "@/lib/constants/constants";
+import { useProfileStore } from "@/stores/useProfileStore";
 
 export default function Profile() {
     const supabase = createClient();
     const router = useRouter();
+    const {profile, user, fetchProfile, loading: profileLoading} = useProfileStore();
 
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [page, setPage] = useState<"home" | "name" | "avatar">("home")
     const [error, setError] = useState<string | null>();
 
     const [inputName, setInputName] = useState<string>("");
-    const [inputColor1, setInputColor1] = useState<string>("#ff00ff");
-    const [inputColor2, setInputColor2] = useState<string>("#00ffff");
-    const [inputIcon, setInputIcon] = useState<string>("");
-
+    const [inputColor1, setInputColor1] = useState<string>("");
+    const [inputColor2, setInputColor2] = useState<string>("");
+    const [inputIcon, setInputIcon] = useState<string>("star");
 
     useEffect(() => {
-        const helper = async () => {
-            setLoading(true);
-            setError(null);
-            // check if user is logged in
-            const {data: { user: userData }} = await supabase.auth.getUser();
-
-            if (!userData?.id) {
+        async function helper() {
+            if (profileLoading) {
+                return;
+            }
+            
+            if (!user) {
                 router.replace('/');
                 return;
-            } else {
-                setUser(userData);
             }
 
-            const {data: profile, error: profileError} = await supabase
-            .from('profile')
-            .select('*')
-            .eq('user_id', userData.id)
-            .single();
-
-            if (!profile || profileError) {
-                setError("We couldn't load your profile. Please try again later");
-                return;
+            if (profile) {
+                setInputName(profile.name);
+                setInputIcon(profile.icon);
+                setInputColor1(profile.color_primary);
+                setInputColor2(profile.color_secondary);
             }
-
-            setInputName(profile.name);
-            setInputColor1(profile.color_primary);
-            setInputColor2(profile.color_secondary);
-            setInputIcon(profile.icon);
-
-
-
-            setLoading(false);
         }
         helper();
-    }, [])
+    }, [profile])
+
+    function handleReturnToProfile() {
+        router.push('/profile');
+    }
 
     function handleReturnHome() {
         setPage("home");
@@ -85,13 +74,69 @@ export default function Profile() {
         setPage("avatar");
     }
 
-    function handleSaveName() {
+    async function handleSaveName() {
+
+        setLoading(true);
+
+        if (!user || !user.id) {
+            setError("We couldn't update your name. Please try again later.");
+            setLoading(false);
+            return;
+        }
+
+        const {error} = await supabase
+        .from('profile')
+        .update({name: inputName})
+        .eq('user_id', user.id);
+        
+        if (error) {
+            setError("We couldn't update your name. Please try again later.")
+            setLoading(false);
+            return;
+        }
+
+        fetchProfile(user.id);
+
+        setLoading(false);
+        setPage("home");
 
     }
 
-    function handleSaveAvatar() {
+    async function handleSaveAvatar() {
+
+        setLoading(true);
+
+        if (!user || !user.id) {
+            setError("We couldn't update your avatar. Please try again later.");
+            setLoading(false);
+            return;
+        }
+
+        const {error} = await supabase
+        .from('profile')
+        .update({
+            icon: inputIcon,
+            color_primary: inputColor1,
+            color_secondary: inputColor2,
+        })
+        .eq('user_id', user.id);
+        
+        if (error) {
+            setError("We couldn't update your avatar. Please try again later.")
+            setLoading(false);
+            return;
+        }
+
+        fetchProfile(user.id);
+
+        setLoading(false);
+        setPage("home");
 
     }
+
+    const saveNameDisabled = inputName.length < CHARMIN_NAME || inputName.length > CHARLIM_NAME || loading;
+    console.warn( loading);
+    const saveAvatarDisabled = !inputColor1 || !inputColor2 || !inputIcon || loading
     
 
     return (
@@ -109,26 +154,16 @@ export default function Profile() {
                 {error &&
                 <ErrorMessage text={error}/>
                 }
-                {/* User data */}
-                <div className="flex flex-col gap-4 items-center">
-                    <Avatar
-                    outline={true}
-                    size={24}
-                    profile={
-                        {
-                            icon: inputIcon,
-                            color_primary: inputColor1,
-                            color_secondary: inputColor2
-                        }
-                    }
-                    />
-                    <p className="font-bold text-2xl line-clamp-1 text-ellipsis shrink">
-                        {inputName}
-                    </p>
-                </div>
 
                 {// Return button
-                page !== "home" &&
+                page === "home"
+                ?
+                <div className="flex justify-center items-center w-10 h-10 hover:bg-primary/15 absolute top-4 left-4 cursor-pointer rounded-full"
+                onClick={handleReturnToProfile}
+                >
+                    <MdOutlineChevronLeft size={32}/>
+                </div>
+                :
                 <div className="flex justify-center items-center w-10 h-10 hover:bg-primary/15 absolute top-4 left-4 cursor-pointer rounded-full"
                 onClick={handleReturnHome}
                 >
@@ -139,6 +174,22 @@ export default function Profile() {
                 {// Home
                     page === "home" &&
                     <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-4 items-center mb-6">
+                            <Avatar
+                            loading={profileLoading}
+                            outline={true}
+                            size={24}
+                            profile={profile ?? undefined}
+                            />
+                            {profileLoading
+                            ? <p className="select-none text-transparent bg-primary/15 rounded-md font-bold text-2xl ">
+                                Edit Username
+                            </p>
+                            : <p className="font-bold text-2xl line-clamp-1 text-ellipsis shrink">
+                                {profile?.name ? '@' + profile.name : "Edit your name"}
+                            </p>
+                            }
+                        </div>
                         <button
                             className="flex flex-row gap-1 justify-center items-center bg-primary/5 hover:bg-primary/10 transition-colors py-2 rounded-md cursor-pointer"
                             onClick={handleEditName}
@@ -159,21 +210,27 @@ export default function Profile() {
 
                 {// Edit name
                 page === "name" && 
-                <div className="h-full flex flex-col gap-1">
+                <div className="mt-12 h-full flex flex-col gap-1">
                     <p className="text-2xl font-bold">Name</p>
                     <input 
                     autoFocus
                     type="text" 
                     className="focus:outline-0 text-ellipsis bg-primary/5 w-full text-primary text-2xl py-2 px-4 rounded-2xl"
                     placeholder="Enter your username"
+                    maxLength={CHARLIM_NAME}
                     value={inputName}
                     onChange={(e) => {
-                        setInputName(e.target.value);
+                        const value = e.target.value.replace(/[^a-zA-Z0-9._]/g, "");
+                        setInputName(value.toLowerCase());
                     }}
                     />
                     <button
-                        className="mt-6 flex flex-row gap-1 justify-center items-center bg-primary/5 hover:bg-primary/10 transition-colors py-2 rounded-md cursor-pointer"
+                        className={clsx(
+                            "select-none mt-6 flex flex-row gap-1 justify-center items-center bg-primary/5 transition-colors py-2 rounded-md",
+                            saveNameDisabled ? "opacity-50" : "cursor-pointer hover:bg-primary/10"
+                        )}
                         onClick={handleSaveName}
+                        disabled={saveNameDisabled}
                     >
                         <IoMdSave />
                         <p className="text-lg">Save Changes</p>
@@ -184,18 +241,34 @@ export default function Profile() {
                 {// Edit avatar
                 page === "avatar" && 
                 <div className="h-full flex flex-col gap-4">
+                    <div className="self-center">
+                    <Avatar
+                    loading={profileLoading}
+                    outline={true}
+                    size={24}
+                    profile={
+                        {
+                            name: inputName,
+                            icon: inputIcon,
+                            color_primary: inputColor1,
+                            color_secondary: inputColor2,
+                            created_at: ""
+                        }
+                    }
+                    />
+                    </div>
                     <div>
                     <p className="text-2xl font-bold">Icon</p>
                     <div className="flex flex-row gap-2 flex-wrap">
-                    {AVATAR_ICONS.map((icon, idx) => (
+                    {Object.entries(AVATAR_ICONS).map(([key, Icon], idx) => (
                         <div
-                        key={icon.name}
+                        key={key}
                         className="w-8 h-8 bg-primary/5 flex justify-center items-center rounded-full cursor-pointer"
                         onClick={() => {
-                            setInputIcon(icon.name)
+                            setInputIcon(key)
                         }}
                         >
-                            {AVATAR_ICONS.find((key) => (key.name === icon.name))?.icon}
+                            <Icon />
                         </div>
                     ))}
                     </div>
@@ -241,8 +314,12 @@ export default function Profile() {
                     </div>
                     </div>
                     <button
-                        className="mt-6 flex flex-row gap-1 justify-center items-center bg-primary/5 hover:bg-primary/10 transition-colors py-2 rounded-md cursor-pointer"
+                        className={clsx(
+                            "select-none mt-6 flex flex-row gap-1 justify-center items-center bg-primary/5 transition-colors py-2 rounded-md",
+                            saveAvatarDisabled ? "opacity-50" : "cursor-pointer hover:bg-primary/10"
+                        )}
                         onClick={handleSaveAvatar}
+                        disabled={saveAvatarDisabled}
                     >
                         <IoMdSave />
                         <p className="text-lg">Save Changes</p>
