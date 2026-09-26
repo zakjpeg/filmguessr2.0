@@ -16,6 +16,7 @@ import { User } from "@supabase/supabase-js";
 import Avatar from "@/components/user/Avatar";
 import { useProfileStore } from "@/stores/useProfileStore";
 import getLevel from "@/lib/user/client/getLevel";
+import RecentGames from "@/components/profile/RecentGames";
 
 export default function Profile() {
     const supabase = createClient();
@@ -23,7 +24,7 @@ export default function Profile() {
 
     const {user, profile, loading: profileLoading} = useProfileStore();
 
-    const experience = useMemo(() => getLevel(profile?.experience?.points), [profile?.experience?.points])
+    const experience = useMemo(() => getLevel(profile?.profile_experience?.points), [profile?.profile_experience?.points])
 
     async function handleSignOut() {
         await signOut();
@@ -131,20 +132,10 @@ export default function Profile() {
 
             {/* Game Info */}
             <div className={clsx(
-                "flex flex-col gap-6 bg-background p-8 min-w-0 w-full rounded-2xl shadow-xl flex-4 min-w-0",
+                "flex flex-col gap-6 bg-background p-8 w-full rounded-2xl shadow-xl flex-4 min-w-0",
                 "max-md:w-full"
             )}>
-                <div className="flex flex-col gap-2">
-                    <p className="uppercase font-bold text-3xl">RECENT GAMES</p>
-                    <div className="w-full flex flex-row gap-4 flex-nowrap overflow-x-auto scrollbar-none p-3 rounded-lg bg-primary/5">
-                        {Array.from({length: 20}).map((key, idx) => (
-                            <div
-                            key={idx}
-                            className="shrink-0 w-50 h-30 bg-red-500 rounded-md"
-                            />
-                        ))}
-                    </div>
-                </div>
+                <RecentGames />
 
             </div>
         </div>

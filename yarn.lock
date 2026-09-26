@@ -2787,6 +2787,11 @@ react-icons@^5.7.0:
   resolved "https://registry.npmjs.org/react-icons/-/react-icons-5.7.0.tgz"
   integrity sha512-LBLy340Rzqy6+/yVhZKT3B/QpP1BZaesGqasf09HPOBzRarcDIFH0WwXlXQfE7q7ipxK4MSiC5DIBWURCny6fw==
 
+react-image-and-background-image-fade@^2.0.0-alpha.0:
+  version "2.0.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/react-image-and-background-image-fade/-/react-image-and-background-image-fade-2.0.0-alpha.0.tgz#224e4e3af9c9bc7b4fa9e1be49ce6c3863f1b190"
+  integrity sha512-117L01W5dUh/H+tZ/Nbp+BWlhuYs4th3n9PK1vKI8IJMMcC31Xw+X7dVt/h6xbmsrW86dppxpWbbjGzdGjaF2Q==
+
 react-is@^16.13.1:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"

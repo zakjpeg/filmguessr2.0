@@ -1,86 +1,79 @@
 "use client";
 
 import { Button } from "@/components/buttons/Button";
+import ErrorMessage from "@/components/error/ErrorMessage";
+import MovieFrameView from "@/components/game/MovieFrameView";
 import BlurredImageBackground from "@/components/image/BlurredImageBackground";
+import { RANDOM_IMAGE_URL } from "@/lib/constants/constants";
+import { startGame } from "@/lib/game/server/startGame";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 
 
 export default function Play() {
 
-    const [movie, setMovie] = useState<{img: string}>({img: "https://picsum.photos/1080/1080"});
-    const [guessYear, setGuessYear] = useState<number>(1994);
+    const router = useRouter();
+
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null)
+    const [frame, setFrame] = useState<string | null>("https://m.media-amazon.com/images/M/MV5BMGMyYTcwMTAtNTJkYS00NjBiLWEyZWUtM2QyYWExNDQ5Y2FhXkEyXkFqcGc@._V1_FMjpg_UX2160_.jpg")
+
+    const handleStartGame = async () => {
+        setLoading(true);
+        setError(null);
+
+        const {game_id, error: startGameError} = await startGame();
+
+        if (startGameError) {
+            setError(startGameError);
+            setLoading(false);
+            return;
+        }
+
+        router.push(`/play/${game_id}`);
+    }
 
     return (
         <main className="relative select-none flex-1 self-center max-w-7xl w-full h-20">
 
-            <BlurredImageBackground src={movie.img}/>
+            <BlurredImageBackground src={frame ?? RANDOM_IMAGE_URL}/>
             
-            <div className="pt-10 flex-1 flex flex-row gap-12 items-center">
+            <div className={clsx(
+                "pt-10 flex-1 flex flex-row gap-12 items-center",
+                "max-md:flex-col max-md:p-4"
+            )}>
 
                 {/* Play Screen */}
                 <div className="flex-3 h-full flex flex-col gap-3">
-                    <div className="rounded-3xl max-h-120 overflow-hidden w-full bg-black shadow-lg">
-                        <img 
-                        src={movie.img} 
-                        alt="Filmguessr" 
-                        className="w-full h-full"
-                        />
-                    </div>
-                    {/* Round counter */}
-                    <div className="px-10 h-1 w-full flex flex-row justify-start items-center gap-2">
-                    {Array.from({length: 5}).map((key, idx) => (
-                        <div 
-                        key={idx} 
-                        className={clsx(
-                            "flex-1 bg-white h-full rounded-full",
-                            idx < 3 ? "" : "opacity-25"
-                        )}
-                        />
-                    ))
-                    }
-                    </div>
+                    <MovieFrameView 
+                    src={frame}
+                    showControls={false}
+                    />
                 </div>
 
                 {/* Guess Menu */}
-                <div className="flex-2 flex flex-col gap-8">
-                    <div className="flex flex-col">
-                        <p className="text-xl ml-4">Title</p>
-                        <input 
-                        type="text" 
-                        className="focus:outline-0 text-ellipsis focus:bg-primary/5 w-full text-primary font-bold text-4xl py-2 px-4 rounded-2xl"
-                        placeholder="Movie Name"
-                        />
-                    </div>
-                    <div className="flex flex-col">
-                        <p className="text-xl ml-4">Year</p>
-                        <input type="number"
-                        value={guessYear}
-                        onChange={(e) => {
-                            setGuessYear(Number(e.target.value))
-                        }}
-                        min={1950}
-                        max={dayjs().year()}
-                        className="font-bold text-4xl px-4 py-2 rounded-2xl focus:outline-0 focus:bg-primary/5"
-                        />
-                        <input 
-                        type="range" 
-                        min={1950}
-                        max={dayjs().year()}
-                        value={guessYear}
-                        onChange={(e) => {
-                            setGuessYear(Number(e.target.value));
-                        }}
-                        className="w-full h-1 appearance-none cursor-pointer rounded-full bg-white outline-none
-         track:bg-white moz-track:bg-white
-         thumb:appearance-none thumb:w-1 thumb:h-6 thumb:bg-green-500 thumb:rounded-none
-         moz-thumb:appearance-none moz-thumb:w-1 moz-thumb:h-6 moz-thumb:bg-green-500 moz-thumb:rounded-none accent-accent"
-                        />
-                    </div>
+                <div className="text-center flex-2 flex flex-col items-center gap-8">
+                    <p className="uppercase text-5xl font-bold">
+                        CLASSIC
+                    </p>
+                    <p className="text-xl text-primary/75 font">
+                        5 rounds, 2 minute timer. Guess the films&apos; title and year to get a perfect score.
+                    </p>
+
+                    {error &&
+                    <ErrorMessage text={error}/>
+                    }
+
                     <div className="pt-10 flex w-80 self-center">
-                        <Button text="guess" color="green" hover="red" />
+                        <Button
+                        text={loading ? "STARTING..." : "START"}
+                        color="green"
+                        hover="red" 
+                        onClick={handleStartGame}
+                        disabled={loading}
+                        />
                     </div>
                 </div>
 

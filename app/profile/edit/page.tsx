@@ -64,6 +64,11 @@ export default function Profile() {
 
     function handleReturnHome() {
         setPage("home");
+        if (profile) {
+            setInputColor1(profile.color_primary);
+            setInputColor2(profile.color_secondary);
+            setInputName(profile?.name);
+        }
     }
 
     function handleEditName() {

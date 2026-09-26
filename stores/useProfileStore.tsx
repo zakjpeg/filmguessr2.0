@@ -25,7 +25,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
             .from("profile")
             .select(`
                 *,
-                experience (
+                profile_experience (
                     *
                 )
             `)
