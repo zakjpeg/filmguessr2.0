@@ -5,6 +5,7 @@ import ErrorMessage from "@/components/error/ErrorMessage";
 import MovieFrameView from "@/components/game/MovieFrameView";
 import BlurredImageBackground from "@/components/image/BlurredImageBackground";
 import { CHARLIM_GUESS_TITLE, RANDOM_IMAGE_URL } from "@/lib/constants/constants";
+import makeGuess from "@/lib/game/server/makeGuess";
 import { nextRound } from "@/lib/game/server/nextRound";
 import { createClient } from "@/utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -130,6 +131,14 @@ export default function Play() {
                 >
                     test next round
                 </button>   
+                <button className="text-white bg-green-500"
+                onClick={async () => {
+                    makeGuess(game_id, '', 2000);
+                }}
+                >
+                    test make guess
+                </button>   
+
             </div>
             
             
