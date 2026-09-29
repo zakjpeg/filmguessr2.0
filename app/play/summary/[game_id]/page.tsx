@@ -5,8 +5,10 @@ import ErrorMessage from "@/components/error/ErrorMessage";
 import MovieFrameView from "@/components/game/MovieFrameView";
 import BlurredImageBackground from "@/components/image/BlurredImageBackground";
 import FgImage from "@/components/image/FgImage";
-import { RANDOM_IMAGE_URL } from "@/lib/constants/constants";
+import Avatar from "@/components/user/Avatar";
+import { GAME_ZONE_GREEN, GAME_ZONE_YELLOW, RANDOM_IMAGE_URL } from "@/lib/constants/constants";
 import { nextRound } from "@/lib/game/server/nextRound";
+import { useProfileStore } from "@/stores/useProfileStore";
 import { createClient } from "@/utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
 import clsx from "clsx";
@@ -20,6 +22,7 @@ import { PiSpinner } from "react-icons/pi";
 export default function Play() {
     const supabase = createClient();
     const {game_id} = useParams<{game_id: string}>();
+    const {profile} = useProfileStore();
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -92,19 +95,46 @@ export default function Play() {
                 <div className="flex flex-col items-center">
                     <p className="text-lg uppercase font-bold">{game.game_mode.name}</p>
                     <p className="text-3xl"><span className="font-bold text-accent text-7xl">{Number(game.game_round.map((round) => (round.points)).reduce((sum: number, num: number) => sum + num)).toLocaleString()}</span> /{Number(game.game_mode.total_rounds * game.game_mode.points_per_round).toLocaleString()}</p>
-                    <p className="text-lg">Tagline goes here!</p>
+                    <div className="flex items-center justify-center gap-2">
+                        <Avatar
+                        profile={profile}
+                        outline
+                        size={4}
+                        />
+                        <p className="text-lg">@{profile?.name}</p>
+                    </div>
                 </div>
-                <div className="flex flex-row w-[80%] items-center justify-center flex-wrap gap-4">
+                <div className="h-60 flex flex-row w-[80%] items-center justify-center flex-wrap gap-4">
                     {game?.game_round?.map((round: any) => {
 
                         const img = round.movie_frame.image_url;
                         const title = round.movie_frame.movie.title;
                         const year = round.movie_frame.movie.year;
+                        const points = round.points;
+                        let zone = "green";
+
+                        if (points < game?.game_mode?.points_per_round * GAME_ZONE_YELLOW) { 
+                            zone = "red"
+                        } else if (points < game?.game_mode?.points_per_round * GAME_ZONE_GREEN) {
+                            zone = "yellow";
+                        }
+
                         return (
-                            <div key={round.round_id} className="relative z-1 hover:z-2 hover:scale-150 transition-normal duration-750 w-70 shrink-0 aspect-video rounded-2xl overflow-hidden">
+                            <div key={round.round_id} className="group cursor-pointer relative z-1 hover:z-2 hover:w-100 transition-normal duration-250 w-70 shrink-0 aspect-video rounded-2xl overflow-hidden">
                                 <FgImage src={round.movie_frame.image_url} alt={`${title}, ${year}`} width={0} height={0}/>
-                                <div className="p-3 leading-4 absolute bottom-0 w-full bg-linear-0 from-background to-transparent">
-                                    <p><span className="font-bold">{title}</span>, {year}</p>
+                                {/* Title */}
+                                <div className={clsx(
+                                    "px-2 py-1 group-hover:p-2 transition-all absolute bottom-0 w-full bg-linear-0 from-background to-transparent",
+                                )}>
+                                    <p className="transition-all duration-250 font-bold text-shadow-md group-hover:text-4xl text-xl">{Number(points).toLocaleString()}
+                                        <span className="text-xs text-primary/75 font-normal"> / {Number(game?.game_mode.points_per_round).toLocaleString()}</span>
+                                    </p>
+                                </div>
+                                {/* Points */}
+                                <div className={clsx(
+                                    "px-2 py-1 absolute top-0 w-full bg-linear-0 to-transparent",
+                                )}>
+                                    <p className="text-shadow-md"><span className="font-bold">{title}</span>, {year}</p>
                                 </div>
                                 <p className=""></p>
                             </div>

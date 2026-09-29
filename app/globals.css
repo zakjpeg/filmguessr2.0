@@ -6,6 +6,9 @@
   --secondary: #000000;
   --accent: rgb(208, 255, 0);
   --mega: rgb(213, 87, 255);
+  --score-green: rgb(64, 255, 0);
+  --score-yellow: rgb(255, 200, 0);
+  --score-red: rgb(110, 13, 0);
   --font-sans: --font-barlow
 }
 
@@ -16,6 +19,9 @@
   --color-accent: var(--accent);
   --color-mega: var(--mega);
   --font-sans: var(--font-barlow);
+  --color-score-green: var(--score-green);
+  --color-score-yellow: var(--score-yellow);
+  --color-score-red: var(--score-red);
 }
 
 @media (prefers-color-scheme: dark) {

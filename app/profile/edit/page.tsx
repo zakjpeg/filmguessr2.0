@@ -65,6 +65,7 @@ export default function Profile() {
     function handleReturnHome() {
         setPage("home");
         if (profile) {
+            setInputIcon(profile.icon)
             setInputColor1(profile.color_primary);
             setInputColor2(profile.color_secondary);
             setInputName(profile?.name);
@@ -140,7 +141,6 @@ export default function Profile() {
     }
 
     const saveNameDisabled = inputName.length < CHARMIN_NAME || inputName.length > CHARLIM_NAME || loading;
-    console.warn( loading);
     const saveAvatarDisabled = !inputColor1 || !inputColor2 || !inputIcon || loading
     
 
