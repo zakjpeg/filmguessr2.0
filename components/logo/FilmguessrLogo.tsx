@@ -1,6 +1,6 @@
 "use client";
 
-import { MdLocalMovies, MdMovie } from "react-icons/md";
+import { MdMovie } from "react-icons/md";
 
 export function FilmguessrLogo() {
     return (

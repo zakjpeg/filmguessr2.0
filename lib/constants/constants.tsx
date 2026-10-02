@@ -9,5 +9,4 @@ export const SCORE_TITLE_WEIGHT = 0.60 // Represents the weight for title guesse
 export const GAME_ZONE_GREEN = 0.75 // Anything above this is a GREEN. Anything below is a YELLOW.
 export const GAME_ZONE_YELLOW = 0.4 // Anything above this is a YELLOW. Anything below is a RED.
 
-
 export const RANDOM_IMAGE_URL = "https://picsum.photos/50/50"

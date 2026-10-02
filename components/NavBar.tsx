@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { MdLocalMovies, MdMovie } from "react-icons/md";
+import { MdLocalMovies } from "react-icons/md";
 import { FilmguessrLogo } from "./logo/FilmguessrLogo";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useMemo, useState } from "react";
@@ -14,6 +14,7 @@ import Avatar from "./user/Avatar";
 import { useProfileStore } from "@/stores/useProfileStore";
 import clsx from "clsx";
 import getLevel from "@/lib/user/client/getLevel";
+import { XPLevel } from "./user/XPLevel";
 
 export function NavBar() {
 
@@ -48,13 +49,7 @@ export function NavBar() {
                     </div>
                 : profile
                     ?   <div className="flex flex-row items-center gap-4">
-                            {experience &&
-                            <div
-                            title={"Level " + experience.level}
-                            className="flex flex-row gap-1 text-sm items-center font-bold text-center w-fit h-fit px-1 py-0 rounded-sm uppercase text-background bg-accent">
-                                <MdMovie className="text-background" size={16}/> {experience.level}
-                            </div>
-                            }
+                            <XPLevel />
                             <Link
                             href="/profile"
                             className="hover:text-accent cursor-pointer"

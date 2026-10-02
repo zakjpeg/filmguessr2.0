@@ -7,7 +7,6 @@ import Image from "next/image";
 import BlurredImageBackground from "@/components/image/BlurredImageBackground";
 import { useEffect, useMemo, useState } from "react";
 import * as EmailValidator from "email-validator"
-import { MdMovie, MdOutlineError } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import signOut from "@/lib/auth/client/signOut";
@@ -17,6 +16,7 @@ import Avatar from "@/components/user/Avatar";
 import { useProfileStore } from "@/stores/useProfileStore";
 import getLevel from "@/lib/user/client/getLevel";
 import RecentGames from "@/components/profile/RecentGames";
+import { XPLevel } from "@/components/user/XPLevel";
 
 export default function Profile() {
     const supabase = createClient();
@@ -65,13 +65,7 @@ export default function Profile() {
                             @{profile?.name}
                         </p>
                         }
-                        {experience &&
-                        <p
-                        title={"Level " + experience.level}
-                        className="flex flex-row gap-1 items-center font-bold text-center w-fit px-2 rounded-sm uppercase text-background bg-accent">
-                            <MdMovie className="text-background"/> {experience.level}
-                        </p>
-                        }
+                        <XPLevel size="large" />
                     </div>
                 </div>
 

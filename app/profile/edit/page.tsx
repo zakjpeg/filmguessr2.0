@@ -7,7 +7,7 @@ import Image from "next/image";
 import BlurredImageBackground from "@/components/image/BlurredImageBackground";
 import { useEffect, useState } from "react";
 import * as EmailValidator from "email-validator"
-import { MdMovie, MdOutlineChevronLeft, MdOutlineChevronRight, MdOutlineError } from "react-icons/md";
+import { MdOutlineChevronLeft, MdOutlineChevronRight, MdOutlineError } from "react-icons/md";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import signOut from "@/lib/auth/client/signOut";
