@@ -1,6 +1,7 @@
 "use client";
 
 import { AVATAR_ICONS } from "@/lib/avatar/client/avatar.types";
+import { useProfileStore } from "@/stores/useProfileStore";
 import clsx from "clsx";
 import { PiSpinnerGapLight } from "react-icons/pi";
 import { TiUser } from "react-icons/ti";
@@ -20,6 +21,12 @@ export default function Avatar(
         loading?: boolean
     }
 ) {
+
+    const {profile: selfProfile} = useProfileStore();
+
+    if (!profile) {
+        profile = selfProfile;
+    }
 
     const Icon = (AVATAR_ICONS[profile?.icon as keyof typeof AVATAR_ICONS]) ?? TiUser;
 
