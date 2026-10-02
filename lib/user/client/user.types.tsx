@@ -6,7 +6,7 @@ type Profile = {
     color_primary: string,
     color_secondary: string,
     created_at: string,
-    experience?: {
+    profile_experience?: {
         points: number,
     }
 }

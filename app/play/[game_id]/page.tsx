@@ -30,12 +30,13 @@ export default function Play() {
     const initializedRef = useRef(false);
 
     const [gamemode, setGamemode] = useState<any>(null);
-    const [currentRound, setCurrentRound] = useState<number>(0)
+    const [currentRound, setCurrentRound] = useState<number>(0);
 
     const [frame, setFrame] = useState<string | null>( )
-    const [guessYear, setGuessYear] = useState<number>(1994);
+    const [inputYear, setInputYear] = useState<number>(1994);
+    const inputTitleRef = useRef<HTMLInputElement>(null);
 
-    
+    const [guessResult, setGuessResult] = useState<any>(null);
 
     const getGamemode = async () => {
         setLoading(true);
@@ -67,14 +68,14 @@ export default function Play() {
         setGamemode(gamemodeData.game_mode);
     }
 
-    const getNextRound = async () => {
+    const handleNextRound = async () => {
         setLoading(true);
         setError(null);
         
-        const {frame, roundNumber, error, gameOver} = await nextRound(game_id);
+        const {frame, roundNumber, error: nextRoundError, gameOver} = await nextRound(game_id);
         
-        if (error) {
-            setError(error);
+        if (nextRoundError) {
+            setError(nextRoundError);
             setLoading(false);
         }
 
@@ -86,7 +87,25 @@ export default function Play() {
         setFrame(frame);
         setCurrentRound(roundNumber ?? 0);
         setLoading(false);
+        setGuessResult(null);
 
+    }
+
+    const handleGuess = async () => {
+        setLoading(true);
+        const result = await makeGuess(game_id, inputTitleRef.current?.value ?? '', inputYear);
+
+        if (result.error) {
+            setLoading(false);
+            setError(result.error);
+            return;
+        }
+
+        setLoading(false);
+        setGuessResult(result);
+        if (inputTitleRef.current) {
+            inputTitleRef.current.value = "";
+        }
     }
 
     useEffect(() => {
@@ -100,47 +119,16 @@ export default function Play() {
             // get gamemode
             await getGamemode();
             // get next round
-            await getNextRound();
+            await handleNextRound();
         }
         helper();
 
     }, [])
 
-    const handleGuess = async () => {
-        
-    }
-
     return (
         <main className="relative select-none flex-1 self-center max-w-7xl w-full h-20">
 
             <BlurredImageBackground src={frame ?? RANDOM_IMAGE_URL}/>
-
-            {/* DEV TOOLS */}
-            <div className="flex flex-row gap-2">
-                <button className="text-white bg-black"
-                onClick={() => {
-                    setFrame((prev) => EXAMPLE_FRAMES.find((frame) => frame !== prev))
-                }}
-                >
-                    Switch image
-                </button>   
-                <button className="text-white bg-red-500"
-                onClick={async () => {
-                    getNextRound();
-                }}
-                >
-                    test next round
-                </button>   
-                <button className="text-white bg-green-500"
-                onClick={async () => {
-                    makeGuess(game_id, '', 2000);
-                }}
-                >
-                    test make guess
-                </button>   
-
-            </div>
-            
             
             <div className={clsx(
                 "pt-10 flex-1 flex flex-row gap-12 items-center",
@@ -151,6 +139,9 @@ export default function Play() {
                 <div className="shrink-0 flex-3 h-full flex flex-col gap-3">
                     <MovieFrameView 
                     src={frame}
+                    title={guessResult?.answer.title}
+                    year={guessResult?.answer.year}
+                    revealAnswer
                     />
                     {/* Round counter */}
                     <div className="px-10 h-1 w-full flex flex-row justify-start items-center gap-2">
@@ -167,51 +158,88 @@ export default function Play() {
                     </div>
                 </div>
 
-                {/* Guess Menu */}
-                <div className="flex-2 flex flex-col gap-8">
-                    <div className="flex flex-col">
-                        <p className="text-xl ml-4">Title</p>
-                        <input 
-                        type="text" 
-                        className="focus:outline-0 text-ellipsis focus:bg-primary/5 w-full text-primary font-bold text-4xl py-2 px-4 rounded-2xl"
-                        placeholder="Movie Name"
-                        autoFocus
-                        maxLength={CHARLIM_GUESS_TITLE}
-                        />
+                {/* Guess / Answer Menu */}
+                {guessResult
+                ?
+                    <div className="flex-2 flex flex-col items-center w-full gap-8">
+                        <p className="text-3xl">
+                            <span className="font-bold text-accent text-[5rem]">
+                            {guessResult.points.toLocaleString()}
+                            </span> /{Number(gamemode.points_per_round).toLocaleString()}</p>
+                        <div className="flex flex-col w-full">
+                            <p className="text-xl ml-4">Title</p>
+                            <div 
+                            className="focus:outline-0 text-ellipsis focus:bg-primary/5 w-full text-primary font-bold text-4xl py-2 px-4 rounded-2xl"
+                            >
+                                {guessResult.guess.title}
+                            </div>
+                        </div>
+                        <div className="flex flex-col w-full">
+                            <p className="text-xl ml-4">
+                                Year
+                            </p>
+                            <div
+                            className="font-bold text-4xl px-4 py-2 rounded-2xl focus:outline-0 focus:bg-primary/5"
+                            >
+                                {(guessResult.guess.year !== guessResult.answer.year) &&
+                                <span className="opacity-70">{guessResult.guess.year} → </span>
+                                }
+                                <span>{guessResult.answer.year}</span>
+                            </div>
+                        </div>
+                        {error &&
+                        <ErrorMessage text={error}/>
+                        }
+                        <div className="pt-10 flex w-80 self-center">
+                            <Button text="next" color="white" hover="green" disabled={loading} onClick={handleNextRound}/>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <p className="text-xl ml-4">Year</p>
-                        <input type="number"
-                        value={guessYear}
-                        onChange={(e) => {
-                            setGuessYear(Number(e.target.value))
-                        }}
-                        min={1950}
-                        max={dayjs().year()}
-                        className="font-bold text-4xl px-4 py-2 rounded-2xl focus:outline-0 focus:bg-primary/5"
-                        />
-                        <input 
-                        type="range" 
-                        min={1950}
-                        max={dayjs().year()}
-                        value={guessYear}
-                        onChange={(e) => {
-                            setGuessYear(Number(e.target.value));
-                        }}
-                        className="w-full h-1 appearance-none cursor-pointer rounded-full bg-white outline-none
-         track:bg-white moz-track:bg-white
-         thumb:appearance-none thumb:w-1 thumb:h-6 thumb:bg-green-500 thumb:rounded-none
-         moz-thumb:appearance-none moz-thumb:w-1 moz-thumb:h-6 moz-thumb:bg-green-500 moz-thumb:rounded-none accent-accent"
-                        />
+                :
+                    <div className="flex-2 flex flex-col gap-8">
+                        <div className="flex flex-col">
+                            <p className="text-xl ml-4">Title</p>
+                            <input 
+                            type="text" 
+                            className="focus:outline-0 text-ellipsis focus:bg-primary/5 w-full text-primary font-bold text-4xl py-2 px-4 rounded-2xl"
+                            placeholder="Movie Name"
+                            autoFocus
+                            maxLength={CHARLIM_GUESS_TITLE}
+                            ref={inputTitleRef}
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <p className="text-xl ml-4">Year</p>
+                            <input type="number"
+                            value={inputYear}
+                            onChange={(e) => {
+                                setInputYear(Number(e.target.value))
+                            }}
+                            min={1950}
+                            max={dayjs().year()}
+                            className="font-bold text-4xl px-4 py-2 rounded-2xl focus:outline-0 focus:bg-primary/5"
+                            />
+                            <input 
+                            type="range" 
+                            min={1950}
+                            max={dayjs().year()}
+                            value={inputYear}
+                            onChange={(e) => {
+                                setInputYear(Number(e.target.value));
+                            }}
+                            className="w-full h-1 appearance-none cursor-pointer rounded-full bg-white outline-none
+            track:bg-white moz-track:bg-white
+            thumb:appearance-none thumb:w-1 thumb:h-6 thumb:bg-green-500 thumb:rounded-none
+            moz-thumb:appearance-none moz-thumb:w-1 moz-thumb:h-6 moz-thumb:bg-green-500 moz-thumb:rounded-none accent-accent"
+                            />
+                        </div>
+                        {error &&
+                        <ErrorMessage text={error}/>
+                        }
+                        <div className="pt-10 flex w-80 self-center">
+                            <Button text="guess" color="green" hover="red" disabled={loading} onClick={handleGuess}/>
+                        </div>
                     </div>
-                    {error &&
-                    <ErrorMessage text={error}/>
-                    }
-                    <div className="pt-10 flex w-80 self-center">
-                        <Button text="guess" color="green" hover="red" disabled={loading}/>
-                    </div>
-                </div>
-
+                }
             </div>
 
         </main>

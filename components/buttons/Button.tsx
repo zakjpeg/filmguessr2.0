@@ -50,7 +50,7 @@ export function Button(
         )}
         >
             <div className="w-full h-full absolute left-0 top-0 bg-linear-0 from-black/25 to-transparent from-10% to-75%"></div>
-            <p className="font-bold text-3xl uppercase">{children ? children : text}</p>
+            <div className="font-bold text-3xl uppercase">{children ? children : text}</div>
         </button>
     )
 }

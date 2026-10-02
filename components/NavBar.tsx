@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
-import { MdLocalMovies } from "react-icons/md";
+import { MdLocalMovies, MdMovie } from "react-icons/md";
 import { FilmguessrLogo } from "./logo/FilmguessrLogo";
 import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { BiCircleThreeQuarter } from "react-icons/bi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -13,11 +13,13 @@ import { TiUserAdd } from "react-icons/ti";
 import Avatar from "./user/Avatar";
 import { useProfileStore } from "@/stores/useProfileStore";
 import clsx from "clsx";
+import getLevel from "@/lib/user/client/getLevel";
 
 export function NavBar() {
 
     const supabase = createClient();
     const {profile, loading} = useProfileStore();
+    const experience = useMemo(() => getLevel(profile?.profile_experience?.points), [profile?.profile_experience?.points])
 
     return (
         <div className={clsx(
@@ -45,12 +47,21 @@ export function NavBar() {
                         <PiSpinnerGapLight className="animate-spin"/>
                     </div>
                 : profile
-                    ? <Link
-                        href="/profile"
-                        className="hover:text-accent cursor-pointer"
-                        >
-                            <Avatar size={8} outline={true} profile={profile ?? undefined}/>
-                        </Link>
+                    ?   <div className="flex flex-row items-center gap-4">
+                            {experience &&
+                            <div
+                            title={"Level " + experience.level}
+                            className="flex flex-row gap-1 text-sm items-center font-bold text-center w-fit h-fit px-1 py-0 rounded-sm uppercase text-background bg-accent">
+                                <MdMovie className="text-background" size={16}/> {experience.level}
+                            </div>
+                            }
+                            <Link
+                            href="/profile"
+                            className="hover:text-accent cursor-pointer"
+                            >
+                                <Avatar size={8} outline={true} profile={profile ?? undefined}/>
+                            </Link>
+                        </div>
                     :   <Link
                         href="/join"
                         className="hover:text-accent cursor-pointer"

@@ -94,7 +94,7 @@ export default function Play() {
             <div className="flex flex-col gap-5 items-center">
                 <div className="flex flex-col items-center">
                     <p className="text-lg uppercase font-bold">{game.game_mode.name}</p>
-                    <p className="text-3xl"><span className="font-bold text-accent text-7xl">{Number(game.game_round.map((round) => (round.points)).reduce((sum: number, num: number) => sum + num)).toLocaleString()}</span> /{Number(game.game_mode.total_rounds * game.game_mode.points_per_round).toLocaleString()}</p>
+                    <p className="text-3xl"><span className="font-bold text-accent text-7xl">{Number(game.game_round.map((round: any) => (round.points)).reduce((sum: number, num: number) => sum + num)).toLocaleString()}</span> /{Number(game.game_mode.total_rounds * game.game_mode.points_per_round).toLocaleString()}</p>
                     <div className="flex items-center justify-center gap-2">
                         <Avatar
                         profile={profile}
@@ -132,7 +132,7 @@ export default function Play() {
                                 </div>
                                 {/* Points */}
                                 <div className={clsx(
-                                    "px-2 py-1 absolute top-0 w-full bg-linear-0 to-transparent",
+                                    "px-2 py-1 pb-4 absolute top-0 w-full bg-linear-0 to-background/50 from-transparent opacity-0 group-hover:opacity-100 transition-opacity",
                                 )}>
                                     <p className="text-shadow-md"><span className="font-bold">{title}</span>, {year}</p>
                                 </div>
