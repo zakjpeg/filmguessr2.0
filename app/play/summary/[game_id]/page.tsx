@@ -8,18 +8,22 @@ import FgImage from "@/components/image/FgImage";
 import Avatar from "@/components/user/Avatar";
 import { GAME_ZONE_GREEN, GAME_ZONE_YELLOW, RANDOM_IMAGE_URL } from "@/lib/constants/constants";
 import { nextRound } from "@/lib/game/server/nextRound";
+import { startGame } from "@/lib/game/server/startGame";
 import { useProfileStore } from "@/stores/useProfileStore";
 import { createClient } from "@/utils/supabase/client";
 import { SupabaseClient } from "@supabase/supabase-js";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { IoMdShare } from "react-icons/io";
 import { PiSpinner } from "react-icons/pi";
 
 
 export default function Play() {
+    const router = useRouter();
     const supabase = createClient();
     const {game_id} = useParams<{game_id: string}>();
     const {profile} = useProfileStore();
@@ -77,6 +81,20 @@ export default function Play() {
 
     }, [])
 
+    const handlePlayAgain = async() => {
+        setLoading(true);
+
+        const {game_id, error: startGameError} = await startGame(game.game_mode.name);
+
+        if (startGameError) {
+            setError(startGameError);
+            setLoading(false);
+            return;
+        }
+
+        router.push(`/play/${game_id}`);
+    }
+
     return (
         <main className="relative flex-1 self-center max-w-7xl w-full h-20">
 
@@ -84,13 +102,11 @@ export default function Play() {
 
             <ErrorMessage text={error}/>
 
-            {loading &&
+            {loading ?
             <div className="w-full h-full flex justify-center items-center">
             <PiSpinner className="animate-spin"/>
             </div>
-            }
-
-            {game &&
+            :
             <div className="flex flex-col gap-5 items-center">
                 <div className="flex flex-col items-center">
                     <p className="text-lg uppercase font-bold">{game.game_mode.name}</p>
@@ -110,6 +126,8 @@ export default function Play() {
                         const img = round.movie_frame.image_url;
                         const title = round.movie_frame.movie.title;
                         const year = round.movie_frame.movie.year;
+                        const guessTitle = round.guess_title;
+                        const guessYear = round.guess_year
                         const points = round.points;
                         let zone = "green";
 
@@ -120,8 +138,8 @@ export default function Play() {
                         }
 
                         return (
-                            <div key={round.round_id} className="group cursor-pointer relative z-1 hover:z-2 hover:w-100 transition-normal duration-250 w-70 shrink-0 aspect-video rounded-2xl overflow-hidden">
-                                <FgImage src={round.movie_frame.image_url} alt={`${title}, ${year}`} width={0} height={0}/>
+                            <div key={round.round_id} className="group relative z-1 hover:z-2 hover:w-100 transition-normal duration-250 w-70 shrink-0 aspect-video rounded-2xl overflow-hidden">
+                                <FgImage src={img} alt={`${title}, ${year}`} width={0} height={0}/>
                                 {/* Title */}
                                 <div className={clsx(
                                     "px-2 py-1 group-hover:p-2 transition-all absolute bottom-0 w-full bg-linear-0 from-background to-transparent",
@@ -132,9 +150,9 @@ export default function Play() {
                                 </div>
                                 {/* Points */}
                                 <div className={clsx(
-                                    "px-2 py-1 pb-4 absolute top-0 w-full bg-linear-0 to-background/50 from-transparent opacity-0 group-hover:opacity-100 transition-opacity",
+                                    "px-2 py-1 pb-10 absolute top-0 w-full bg-linear-0 to-background from-transparent opacity-0 group-hover:opacity-100 transition-opacity",
                                 )}>
-                                    <p className="text-shadow-md"><span className="font-bold">{title}</span>, {year}</p>
+                                    <span className="text-shadow-md">{guessTitle}, {guessYear} → <span className="font-bold">{title},</span> {year}</span>
                                 </div>
                                 <p className=""></p>
                             </div>
@@ -142,8 +160,8 @@ export default function Play() {
                     })}
                 </div>
                 <div className="flex flex-row gap-4">
-                    <div>
-                <Button text="PLAY AGAIN" color="white"/>
+                <div>
+                <Button text="PLAY AGAIN" color="white" onClick={handlePlayAgain}/>
                 </div>
                 <div>
                 <Button text="SHARE" color="green" hover="green">
