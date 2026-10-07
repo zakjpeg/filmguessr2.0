@@ -1,6 +1,7 @@
 "use server";
 
 import { MAX_GAME_ROUNDS } from "@/lib/constants/constants";
+import grantExperience from "@/lib/user/server/grantExperience";
 import { createClient } from "@/utils/supabase/server";
 
 type nextRoundReturnType = {
@@ -12,13 +13,6 @@ type nextRoundReturnType = {
 
 export async function nextRound(gameId: string): Promise<nextRoundReturnType> {
     const supabase = await createClient();
-
-    // Get user
-    const {data: {user}, error: userError} = await supabase.auth.getUser();
-    if (!user || !user.id) {
-        console.error("1[STARTGAME] Encountered a user error while creating new game:", userError)
-        return {error: "Couldn't find user. Try signing back in"};
-    }
 
     // Check if user has fulfilled maximum number of rounds
     const prevRoundsQuery = supabase
@@ -79,6 +73,7 @@ export async function nextRound(gameId: string): Promise<nextRoundReturnType> {
         }
 
         // ZAK TODO: give user experience points
+        await grantExperience();
 
         // return game over
         return {

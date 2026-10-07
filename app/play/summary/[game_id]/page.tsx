@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { CgSpinner } from "react-icons/cg";
 import { IoMdShare } from "react-icons/io";
 import { PiSpinner } from "react-icons/pi";
 
@@ -102,15 +103,19 @@ export default function Play() {
 
             <ErrorMessage text={error}/>
 
-            {loading ?
+            {loading 
+            ?
             <div className="w-full h-full flex justify-center items-center">
             <PiSpinner className="animate-spin"/>
             </div>
             :
+            game 
+            ?
             <div className="flex flex-col gap-5 items-center">
                 <div className="flex flex-col items-center">
                     <p className="text-lg uppercase font-bold">{game.game_mode.name}</p>
                     <p className="text-3xl"><span className="font-bold text-accent text-7xl">{Number(game.game_round.map((round: any) => (round.points)).reduce((sum: number, num: number) => sum + num)).toLocaleString()}</span> /{Number(game.game_mode.total_rounds * game.game_mode.points_per_round).toLocaleString()}</p>
+                    {profile &&
                     <div className="flex items-center justify-center gap-2">
                         <Avatar
                         profile={profile}
@@ -119,6 +124,7 @@ export default function Play() {
                         />
                         <p className="text-lg">@{profile?.name}</p>
                     </div>
+                    }
                 </div>
                 <div className="h-60 flex flex-row w-[80%] items-center justify-center flex-wrap gap-4">
                     {game?.game_round?.map((round: any) => {
@@ -138,13 +144,13 @@ export default function Play() {
                         }
 
                         return (
-                            <div key={round.round_id} className="group relative z-1 hover:z-2 hover:w-100 transition-normal duration-250 w-70 shrink-0 aspect-video rounded-2xl overflow-hidden">
+                            <div key={round.round_id} className="group relative z-1 hover:z-2 hover:w-100 ease-in-out transition-normal duration-250 w-70 shrink-0 aspect-video rounded-2xl overflow-hidden">
                                 <FgImage src={img} alt={`${title}, ${year}`} width={0} height={0}/>
                                 {/* Title */}
                                 <div className={clsx(
                                     "px-2 py-1 group-hover:p-2 transition-all absolute bottom-0 w-full bg-linear-0 from-background to-transparent",
                                 )}>
-                                    <p className="transition-all duration-250 font-bold text-shadow-md group-hover:text-4xl text-xl">{Number(points).toLocaleString()}
+                                    <p className="transition-all duration-250 font-bold text-shadow-md group-hover:text-4xl text-xl ease-in-out">{Number(points).toLocaleString()}
                                         <span className="text-xs text-primary/75 font-normal"> / {Number(game?.game_mode.points_per_round).toLocaleString()}</span>
                                     </p>
                                 </div>
@@ -173,6 +179,8 @@ export default function Play() {
                 </div>
                 </div>
             </div>
+            :
+            null
             }
 
         </main>
