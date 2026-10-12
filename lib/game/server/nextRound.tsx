@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/server";
 type nextRoundReturnType = {
     frame?: string,
     roundNumber?: number,
-    gameOver?: any,
+    gameOver?: boolean,
     error?: string
 }
 

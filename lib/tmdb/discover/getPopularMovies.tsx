@@ -1,0 +1,24 @@
+"use server";
+
+export default async function getPopularMovies(page: number = 1) {
+    try {
+    const url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${page}&sort_by=popularity.desc`
+    const res = await fetch(url, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
+            'Content-Type': 'application/json'
+        }
+    })
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const json = await res.json();
+    return json;
+    } catch (error: any) {
+        console.error('Fetch request failed:', error.message);
+    }
+}
+        

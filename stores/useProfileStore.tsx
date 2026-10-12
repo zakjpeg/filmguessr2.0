@@ -27,6 +27,9 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
                 *,
                 profile_experience (
                     *
+                ),
+                admin (
+                    *
                 )
             `)
             .eq("user_id", userId)

@@ -37,6 +37,14 @@ export function NavBar() {
 
             {/* Right Side */}
             <div className="flex flex-row gap-8 justify-end items-center">
+                {profile?.admin &&
+                <Link
+                href="/admin"
+                className="hover:text-accent cursor-pointer"
+                >
+                    Admin
+                </Link>
+                }
                 <Link
                 href="/leaderboards"
                 className="hover:text-accent cursor-pointer"

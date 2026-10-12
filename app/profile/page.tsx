@@ -17,6 +17,7 @@ import { useProfileStore } from "@/stores/useProfileStore";
 import getLevel from "@/lib/user/client/getLevel";
 import RecentGames from "@/components/profile/RecentGames";
 import { XPLevel } from "@/components/user/XPLevel";
+import BestGames from "@/components/profile/BestGames";
 
 export default function Profile() {
     const supabase = createClient();
@@ -130,6 +131,7 @@ export default function Profile() {
                 "max-md:w-full"
             )}>
                 <RecentGames />
+                <BestGames />
 
             </div>
         </div>

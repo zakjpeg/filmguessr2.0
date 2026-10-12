@@ -109,8 +109,6 @@ export default function RecentGames() {
                         <div className="flex flex-row w-full h-full">
                             {
                                 game.game_round.slice(0, 2).map((round, idx) => {
-                                console.log("hi");
-
                                     const img = round.movie_frame.image_url;
                                     return (
                                         <div key={round.movie_frame.frame_id + idx} className="flex-1 h-full w-full">
