@@ -26,15 +26,6 @@ export default function Leaderboards() {
     const [config, setConfig] = useState<any>(null);
     const [movies, setMovies] = useState<any[]>([]);
 
-    useEffect(() => {
-        const helper = async () => {
-            const tmdbConfig = await getConfiguration();
-            setConfig(tmdbConfig);
-            console.log(tmdbConfig);
-        }
-        helper();
-    }, [])
-
     const handleGetMovies = async () => {
 
         const popularMovies = await getPopularMovies(pageRef.current);
@@ -47,6 +38,17 @@ export default function Leaderboards() {
         pageRef.current = pageRef.current + 1;
 
     }
+
+    useEffect(() => {
+        const helper = async () => {
+            const tmdbConfig = await getConfiguration();
+            setConfig(tmdbConfig);
+            console.log(tmdbConfig);
+            await handleGetMovies();
+        }
+        helper();
+    }, [])
+
 
     return (
     <div className="flex flex-col flex-1 items-center justify-center">
@@ -67,7 +69,9 @@ export default function Leaderboards() {
         ))}
         </div>
 
-        <button onClick={handleGetMovies}>Get from TMDb</button>
+        <div className="self-center flex justify-center pt-10 pb-20">
+        <Button text="See more" onClick={handleGetMovies} color="green" hover="green"/>
+        </div>
 
       </main>
     </div>

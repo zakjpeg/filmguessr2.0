@@ -10,7 +10,7 @@ export default function AdminMovieListing({tmdbMovie, tmdbConfig}:{tmdbMovie: an
 
     const url = "/admin/addmovie/" + movie.id
     return (
-        <Link href={url} className="flex flex-row gap-2 w-1/5 hover:bg-primary/10 p-2 rounded-xl cursor-pointer transition-colors">
+        <Link href={url} className="flex flex-row gap-2 w-1/5 min-w-70 hover:bg-primary/10 p-2 rounded-xl cursor-pointer transition-colors">
             <FgImage
             src={config?.images.secure_base_url + config.images.poster_sizes[0] + movie.poster_path}
             width={10}
