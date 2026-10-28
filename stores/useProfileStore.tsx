@@ -9,9 +9,11 @@ type ProfileStore = {
     profile: Profile | null;
     loading: boolean;
 
-    initialize: () => void;
     fetchProfile: (userId: string) => Promise<void>;
     clearProfile: () => void;
+    initialize: () => void;
+    refresh: () => void;
+
 };
 
 export const useProfileStore = create<ProfileStore>((set, get) => ({
@@ -57,11 +59,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         });
     },
 
-    initialize: () => {
-        if (initialized) return;
-
-        initialized = true;
-
+    refresh: () => {
         // Get the current authenticated user
         const supabase = createClient();
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -94,6 +92,16 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
             void get().fetchProfile(user.id);
         });
     },
+
+    initialize: () => {
+        if (initialized) return;
+
+        initialized = true;
+
+        get().refresh()
+    },
+
+
 }));
 
 useProfileStore.getState().initialize();

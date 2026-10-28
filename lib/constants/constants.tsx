@@ -9,6 +9,7 @@ export const SCORE_TITLE_WEIGHT = 0.60; // Represents the weight for title guess
 export const GAME_ZONE_GREEN = 0.75; // Anything above this is a GREEN. Anything below is a YELLOW.
 export const GAME_ZONE_YELLOW = 0.4; // Anything above this is a YELLOW. Anything below is a RED.
 
-export const XP_PER_GAME = 8;
+export const XP_PER_GAME = 20; // Experience points granted in a perfect game
+export const XP_TOLERANCE = 0.3 // (0 - 1.0) Percentage of the XP_PER_GAME that is guaranteed to the user (Not impacted by game performance)
 
 export const RANDOM_IMAGE_URL = "https://picsum.photos/50/50";

@@ -2,6 +2,7 @@
 
 import { MAX_GAME_ROUNDS } from "@/lib/constants/constants";
 import grantExperience from "@/lib/user/server/grantExperience";
+import { useProfileStore } from "@/stores/useProfileStore";
 import { createClient } from "@/utils/supabase/server";
 
 type nextRoundReturnType = {
@@ -60,20 +61,42 @@ export async function nextRound(gameId: string): Promise<nextRoundReturnType> {
     // If user has fulfilled maximum number of rounds, end game
     if ((numPrevRounds) >= (gamemodeData?.game_mode.total_rounds ?? MAX_GAME_ROUNDS)) {
         // update game and return all the data
-        const {error: gameError} = await supabase
+        const {data: game, error: gameError} = await supabase
         .from('game')
         .update({
             completed: true,
         })
         .eq('game_id', gameId)
+        .select(`
+            *,
+            game_round (
+                points
+            ),
+            game_mode (
+                total_rounds,
+                points_per_round
+            )    
+        `)
+        .single();
 
         if (gameError) {
             console.error("[NEXTROUND 4] Encountered a database error while advancing round:", gameError)
             return {error: "We couldn't advance to next round. Please try again."};
         }
 
-        // ZAK TODO: give user experience points
-        await grantExperience();
+        // Calculate guess accuracy from this game
+        const accuracyDividend = game.game_round.map((round: any) => (round.points)).reduce((accumulator: number, currentValue: number) => accumulator + currentValue, 0);
+        const accuracyDivisor = game.game_mode.total_rounds * game.game_mode.points_per_round;
+        const accuracy = accuracyDividend / accuracyDivisor;
+
+        console.warn("accuracyDividend: ", accuracyDividend);
+        console.warn("accuracyDivisor: ", accuracyDivisor);
+        console.warn("accuracy: ", accuracy);
+
+        // Grant experience based on points earned
+        const {error} = await grantExperience(accuracy);
+        // refresh profile store to update experience
+        useProfileStore.getState().refresh();
 
         // return game over
         return {
