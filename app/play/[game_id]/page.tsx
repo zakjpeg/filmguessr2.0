@@ -139,7 +139,7 @@ export default function Play() {
                 <div className="shrink-0 flex-3 h-full flex flex-col gap-3">
                     <MovieFrameView 
                     src={frame}
-                    title={guessResult?.answer.title}
+                    title={guessResult?.answer.title ?? null}
                     year={guessResult?.answer.year}
                     revealAnswer
                     />

@@ -51,6 +51,7 @@ export default function Join() {
         // Handle errors
         if (error) {
             setStage(1);
+            alert(error);
             setError("We couldn't register your account. Please try again, or use a different email.");
             return;
         }

@@ -126,7 +126,7 @@ export default function Play() {
                     </div>
                     }
                 </div>
-                <div className="h-60 flex flex-row w-[80%] items-center justify-center flex-wrap gap-4">
+                <div className="flex flex-row w-[80%] items-center justify-center flex-wrap gap-4">
                     {game?.game_round?.map((round: any) => {
 
                         const img = round.movie_frame.image_url;

@@ -59,7 +59,7 @@ export default function MovieFrameView(
             }
 
             {/* Answer Reveal */}
-            {revealAnswer &&
+            {revealAnswer && title &&
             <div className="transition-opacity duration-500 pointer-events-none absolute top-0 left-0 px-4 py-3 bg-linear-170 from-background to-transparent from-5% to-25% w-full h-full">
                 <p className="text-3xl text-shadow-md font-bold">{revealAnswer ? title : null}</p>
                 <p className="text-2xl">{revealAnswer ? year : null}</p>

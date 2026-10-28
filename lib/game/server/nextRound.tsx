@@ -54,7 +54,7 @@ export async function nextRound(gameId: string): Promise<nextRoundReturnType> {
 
     if (prevRoundsData === null) {
         console.error("[NEXTROUND 3] Encountered a database error while advancing round (roundCount is null)")
-        return {error: "Couldn't advance to next round. Please try again."};
+        return {error: "Couldn't advance to the next round. Please try again."};
     }
 
     // If user has fulfilled maximum number of rounds, end game
@@ -84,29 +84,11 @@ export async function nextRound(gameId: string): Promise<nextRoundReturnType> {
 
     // Otherwise, create a new round
     // Get a random frame
-    const {count: frameCount, error: frameCountError} = await supabase
-    .from('movie_frame')
-    .select('*', {count: 'exact', head: true});
-
-    if (frameCountError) {
-        console.error("[NEXTROUND 5] Encountered a database error while advancing round:", frameCountError)
-        return {error: "Couldn't advance to next round. Please try again."};
-    }
-
-    if (frameCount === null) {
-        console.error("[NEXTROUND 6] Encountered a database error while advancing round (roundCount is null)")
-        return {error: "Couldn't advance to next round. Please try again."};
-    }
-
-    const randomFrameAltId = Math.floor(Math.random() * frameCount + 1);
-
-    const {data: randomFrame, error: randomFrameError} = await supabase
-    .from('movie_frame')
-    .select('frame_id')
-    .eq('frame_id_alt', randomFrameAltId)
-    .limit(1)
+    const {data: randomFrame } = await supabase
+    .rpc('get_random_frame')
     .single();
 
+    console.error(randomFrame);
 
     // Create a new round
     const {data: roundData, error: roundError} = await supabase
@@ -123,12 +105,12 @@ export async function nextRound(gameId: string): Promise<nextRoundReturnType> {
 
     if (roundError) {
         console.error("[NEXTROUND 7] Encountered a database error while advancing round:", roundError);
-        return {error: "Couldn't advance to next round. Please try again."};
+        return {error: "Could not advance to next round. Please try again."};
     }
 
     if (roundData === null) {
         console.error("[NEXTROUND 8] Encountered a database error while advancing round (roundData is null)")
-        return {error: "Couldn't advance to next round. Please try again."};
+        return {error: "We couldn't advance to next round. Please try again."};
     }
 
     return {
