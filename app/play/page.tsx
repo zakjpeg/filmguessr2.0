@@ -59,7 +59,7 @@ export default function Play() {
                         CLASSIC
                     </p>
                     <p className="text-xl text-primary/75 font">
-                        5 rounds, 2 minute timer. Guess the films&apos; title and year to get a perfect score.
+                        5 rounds. Guess the film&apos;s title and year to get a perfect score.
                     </p>
 
                     {error &&
