@@ -25,8 +25,7 @@ export default async function grantExperience() {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user || !user?.id) {
-    console.warn('[GRANT EXPERIENCE] no user')
-
+        console.warn('[GRANT EXPERIENCE] no user')
         return;
     }
 
@@ -50,6 +49,7 @@ export default async function grantExperience() {
 
     if (updateExperienceError) {
         console.error("[grantExperience] Error updating experience points:", updateExperienceError);
+        return;
     }
 
     console.warn('[GRANT EXPERIENCE] all done')

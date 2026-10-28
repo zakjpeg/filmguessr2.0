@@ -5,6 +5,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 export const createClient = async (request: NextRequest) => {
+  console.log("[middleware entry] Running:", request.nextUrl.pathname);
+
   // Create an unmodified response
   let supabaseResponse = NextResponse.next({
     request: {
@@ -38,10 +40,16 @@ export const createClient = async (request: NextRequest) => {
   console.log(request.nextUrl.pathname);
 
   if (request.nextUrl.pathname.startsWith('/admin')) {
+    if (!user) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
+
     const { data, error } = await supabase
     .from('admin')
     .select()
-    .eq('uuid', user?.id)
+    .eq('user_id', user?.id)
     .single();
 
     if (!data) {
